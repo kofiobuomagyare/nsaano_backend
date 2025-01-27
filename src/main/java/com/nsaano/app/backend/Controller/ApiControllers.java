@@ -25,7 +25,7 @@ public class ApiControllers {
         return userRepo.findAll();
     }
 
-    @PostMapping("/save")
+    @PostMapping("/saveUser")
     public String SaveUser(@RequestBody User user){
         userRepo.save(user);
         return "User saved...";
