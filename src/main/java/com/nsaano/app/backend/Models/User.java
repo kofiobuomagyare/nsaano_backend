@@ -60,6 +60,7 @@ public class User {
     public String getBio() {
         return bio;
     }
+
     public String getProfile_picture() {
         return profile_picture;
     }
