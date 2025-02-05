@@ -1,9 +1,11 @@
 package com.nsaano.app.backend.Models;
 
 import jakarta.persistence.*;
+import java.text.DecimalFormat;
 
 @Entity
 public class ServiceProvider {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -31,6 +33,9 @@ public class ServiceProvider {
     
     @Column(nullable = false)
     private String role = "SERVICE_PROVIDER";
+    
+    @Column(unique = true)
+    private String service_provider_id; // Added service_provider_id column
     
     // Getters and Setters
     public long getId() {
@@ -103,5 +108,26 @@ public class ServiceProvider {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getService_provider_id() {
+        return service_provider_id; // Getter for service_provider_id
+    }
+
+    public void setService_provider_id(String service_provider_id) {
+        this.service_provider_id = service_provider_id;
+    }
+
+    // Method to generate the service_provider_id in the "nsaserv001" format
+    public static String generateServiceProviderId(long id) {
+        DecimalFormat df = new DecimalFormat("000");
+        return "nsaserv" + df.format(id);
+    }
+
+    // This method will be called before persisting the entity (before saving)
+    @PrePersist
+    public void prePersist() {
+        // Ensure that the service_provider_id is generated before saving
+        this.service_provider_id = generateServiceProviderId(this.id);
     }
 }
