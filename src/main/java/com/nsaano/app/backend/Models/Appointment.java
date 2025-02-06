@@ -97,7 +97,7 @@ public class Appointment {
         private String user_id;
         private String service_provider_id;
 
-        public AppointmentId() {}
+        public AppointmentId(AppointmentId id) {}
 
         public AppointmentId(String user_id, String service_provider_id) {
             this.user_id = user_id;

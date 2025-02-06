@@ -3,6 +3,7 @@ package com.nsaano.app.backend.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.nsaano.app.backend.Models.Appointment;
+import com.nsaano.app.backend.Models.Appointment.AppointmentId;
 import com.nsaano.app.backend.Repo.AppointmentRepo;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class AppointmentController {
     }
     
     @PutMapping("/update/{id}")
-    public String updateAppointment(@PathVariable Long id, @RequestBody Appointment updatedAppointment) {
+    public String updateAppointment(@PathVariable AppointmentId id, @RequestBody Appointment updatedAppointment) {
         Optional<Appointment> appointment = appointmentRepo.findById(id);
         if (appointment.isPresent()) {
             Appointment existingAppointment = appointment.get();
@@ -35,8 +36,8 @@ public class AppointmentController {
     }
     
     @DeleteMapping("/cancel/{id}")
-    public String cancelAppointment(@PathVariable Long id) {
-        if (appointmentRepo.existsById(id)) {
+    public String cancelAppointment(@PathVariable AppointmentId id) {
+        if (appointmentRepo.existsById(new Appointment.AppointmentId(id))) {
             appointmentRepo.deleteById(id);
             return "Appointment canceled successfully";
         }
