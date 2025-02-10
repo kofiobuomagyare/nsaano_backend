@@ -162,9 +162,8 @@ public class User {
     }
 
     // This method will be called before persisting the entity (before saving)
-    @PrePersist
-    public void prePersist() {
-        // Ensure that the user_id is generated before saving
+    @PostPersist
+    public void postPersist() {
         this.user_id = generateUserId(this.id);
     }
 }
