@@ -28,8 +28,9 @@ public class User {
     @Column
     private String password;
 
-    @Column
-    private String phone_number;
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
 
     @Column
     private String address;
@@ -37,8 +38,10 @@ public class User {
     @Column
     private String bio;
 
-    @Column
-    private String profile_picture;
+    @Column(name = "profile_picture", columnDefinition = "TEXT")
+    private String profilePicture;
+
+
 
     @Column
     private String role;
@@ -77,7 +80,7 @@ public class User {
     }
 
     public String getPhone_number() {
-        return phone_number;
+        return phoneNumber;
     }
 
     public String getAddress() {
@@ -89,7 +92,7 @@ public class User {
     }
 
     public String getProfile_picture() {
-        return profile_picture;
+        return profilePicture;
     }
 
     public String getRole() {
@@ -129,7 +132,7 @@ public class User {
     }
 
     public void setPhone_number(String phone_number) {
-        this.phone_number = phone_number;
+        this.phoneNumber = phone_number;
     }
 
     public void setAddress(String address) {
@@ -141,7 +144,7 @@ public class User {
     }
 
     public void setProfile_picture(String profile_picture) {
-        this.profile_picture = profile_picture;
+        this.profilePicture = profile_picture;
     }
 
     public void setRole(String role) {
