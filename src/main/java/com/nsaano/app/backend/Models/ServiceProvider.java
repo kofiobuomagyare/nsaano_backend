@@ -31,8 +31,8 @@ public class ServiceProvider {
     @Column
     private String profilePicture;
     
-    @Column(nullable = false)
-    private String role = "SERVICE_PROVIDER";
+    //@Column(nullable = false)
+    //private String role = "SERVICE_PROVIDER";
     
     @Column(unique = true)
     private String service_provider_id; // Added service_provider_id column
@@ -102,13 +102,13 @@ public class ServiceProvider {
         this.profilePicture = profilePicture;
     }
 
-    public String getRole() {
-        return role;
-    }
+    //public String getRole() {
+    //    return role;
+   // }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+    //public void setRole(String role) {
+    //    this.role = role;
+  //  }
 
     public String getService_provider_id() {
         return service_provider_id; // Getter for service_provider_id
