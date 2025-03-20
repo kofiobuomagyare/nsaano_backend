@@ -62,6 +62,20 @@ public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Login failed: " + e.getMessage() + "\"}");
     }
 }
+@GetMapping("/profile/{email}")
+public ResponseEntity<?> getUserProfile(@PathVariable String email) {
+    User user = userRepo.findByEmail(email);
+    if (user == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"User not found\"}");
+    }
+    return ResponseEntity.ok(user);
+}
+
+@PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        // Logout is handled client-side by deleting the JWT token.
+        return ResponseEntity.ok("{\"message\": \"Logout successful\"}");
+    }
 
     
 }
