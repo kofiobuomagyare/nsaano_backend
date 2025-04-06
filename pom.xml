@@ -64,6 +64,13 @@
     <artifactId>spring-boot-starter-security</artifactId>
 	</dependency>
 
+		 <!-- Add dotenv-java dependency to load environment variables -->
+        <dependency>
+    <groupId>io.github.cdimascio</groupId>
+    <artifactId>dotenv-java</artifactId>
+    <version>3.2.0</version>
+</dependency>
+
 	</dependencies>
 
 	<build>
