@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.nsaano.app.backend.BackendApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 28.99 s -- in com.nsaano.app.backend.BackendApplicationTests
