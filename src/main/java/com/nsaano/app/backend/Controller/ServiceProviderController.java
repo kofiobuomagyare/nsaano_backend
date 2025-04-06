@@ -1,13 +1,17 @@
 package com.nsaano.app.backend.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.nsaano.app.backend.Models.ServiceProvider;
 import com.nsaano.app.backend.Repo.ServiceProviderRepo;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/service-provider")
+@RequestMapping("/api/providers") // Updated endpoint structure
 public class ServiceProviderController {
     
     @Autowired
@@ -15,26 +19,59 @@ public class ServiceProviderController {
     
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
+    // Register a new Service Provider
     @PostMapping("/register")
-    public String registerServiceProvider(@RequestBody ServiceProvider serviceProvider) {
-        // Check if email already exists
+    public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvider serviceProvider) {
         if (serviceProviderRepo.findByEmail(serviceProvider.getEmail()) != null) {
-            return "Email already in use";
+            return ResponseEntity.badRequest().body("Email already in use");
         }
-        
+
         // Encrypt password before saving
         serviceProvider.setPassword(passwordEncoder.encode(serviceProvider.getPassword()));
         serviceProviderRepo.save(serviceProvider);
-        return "Service Provider registered successfully";
+        return ResponseEntity.ok("Service Provider registered successfully");
     }
-    
+
+    // Login Service Provider
     @PostMapping("/login")
-    public String loginServiceProvider(@RequestBody ServiceProvider serviceProvider) {
+    public ResponseEntity<String> loginServiceProvider(@RequestBody ServiceProvider serviceProvider) {
         ServiceProvider existingProvider = serviceProviderRepo.findByEmail(serviceProvider.getEmail());
-        
+
         if (existingProvider != null && passwordEncoder.matches(serviceProvider.getPassword(), existingProvider.getPassword())) {
-            return "Login successful";
+            return ResponseEntity.ok("Login successful");
         }
-        return "Invalid email or password";
+        return ResponseEntity.badRequest().body("Invalid email or password");
+    }
+
+    // Get Nearby Service Providers
+    @GetMapping("/nearby")
+    public ResponseEntity<List<ServiceProvider>> getNearbyProviders(
+        @RequestParam double latitude, 
+        @RequestParam double longitude, 
+        @RequestParam double radius
+    ) {
+        List<ServiceProvider> providers = serviceProviderRepo.findNearbyProviders(latitude, longitude, radius);
+        return ResponseEntity.ok(providers);
+    }
+
+    // Get a Service Provider by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ServiceProvider> getProviderDetails(@PathVariable Long id) {
+        Optional<ServiceProvider> provider = serviceProviderRepo.findById(id);
+        return provider.map(ResponseEntity::ok)
+                       .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Update a Service Provider’s Details
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceProvider> updateProvider(
+        @PathVariable Long id,
+        @RequestBody ServiceProvider provider
+    ) {
+        if (!serviceProviderRepo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        provider.setId(id);
+        return ResponseEntity.ok(serviceProviderRepo.save(provider));
     }
 }
