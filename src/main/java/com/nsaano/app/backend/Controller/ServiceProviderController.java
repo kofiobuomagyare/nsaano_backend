@@ -35,13 +35,14 @@ public class ServiceProviderController {
     // Login Service Provider
     @PostMapping("/login")
     public ResponseEntity<String> loginServiceProvider(@RequestBody ServiceProvider serviceProvider) {
-        ServiceProvider existingProvider = serviceProviderRepo.findByEmail(serviceProvider.getEmail());
-
+        ServiceProvider existingProvider = serviceProviderRepo.findByPhoneNumber(serviceProvider.getPhoneNumber());
+    
         if (existingProvider != null && passwordEncoder.matches(serviceProvider.getPassword(), existingProvider.getPassword())) {
             return ResponseEntity.ok("Login successful");
         }
-        return ResponseEntity.badRequest().body("Invalid email or password");
+        return ResponseEntity.badRequest().body("Invalid phone number or password");
     }
+    
 
     // Get Nearby Service Providers
     @GetMapping("/nearby")

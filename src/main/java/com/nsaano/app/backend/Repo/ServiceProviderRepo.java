@@ -23,4 +23,6 @@ public interface ServiceProviderRepo extends JpaRepository<ServiceProvider, Long
         @Param("longitude") double longitude,
         @Param("radius") double radius
     );
+
+    ServiceProvider findByPhoneNumber(String phoneNumber);
 }
