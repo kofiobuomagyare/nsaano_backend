@@ -62,14 +62,16 @@ public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Login failed: " + e.getMessage() + "\"}");
     }
 }
-@GetMapping("/profile/{email}")
-public ResponseEntity<?> getUserProfile(@PathVariable String email) {
-    User user = userRepo.findByEmail(email);
+@GetMapping("/profile/{phoneNumber}")
+public ResponseEntity<?> getUserProfile(@PathVariable String phoneNumber) {
+    User user = userRepo.findByPhoneNumberOrEmail(phoneNumber, null); // only phoneNumber matters here
     if (user == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"User not found\"}");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body("{\"message\": \"User not found\"}");
     }
     return ResponseEntity.ok(user);
 }
+
 
 @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {
