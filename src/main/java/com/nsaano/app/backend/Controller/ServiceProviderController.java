@@ -61,6 +61,10 @@ public class ServiceProviderController {
         return provider.map(ResponseEntity::ok)
                        .orElse(ResponseEntity.notFound().build());
     }
+     @GetMapping("/serviceproviders")
+    public List<ServiceProvider> getAllServiceProviders() {
+        return serviceProviderRepo.findAll();
+    }
 
     // Update a Service Provider’s Details
     @PutMapping("/{id}")
@@ -75,3 +79,4 @@ public class ServiceProviderController {
         return ResponseEntity.ok(serviceProviderRepo.save(provider));
     }
 }
+
