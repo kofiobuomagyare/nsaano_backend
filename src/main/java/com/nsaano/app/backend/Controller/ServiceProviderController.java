@@ -22,24 +22,31 @@ public class ServiceProviderController {
     // Register a new Service Provider
     @PostMapping("/register")
 public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvider serviceProvider) {
-    if (serviceProviderRepo.findByEmail(serviceProvider.getEmail()) != null) {
-        return ResponseEntity.badRequest().body("Email already in use");
+    try {
+        if (serviceProviderRepo.findByEmail(serviceProvider.getEmail()) != null) {
+            return ResponseEntity.badRequest().body("Email already in use");
+        }
+    
+        // Encrypt password before saving
+        serviceProvider.setPassword(passwordEncoder.encode(serviceProvider.getPassword()));
+    
+        // Save to get ID
+        serviceProviderRepo.save(serviceProvider);
+    
+        // Set custom ID after saving
+        serviceProvider.setService_provider_id(ServiceProvider.generateServiceProviderId(serviceProvider.getId()));
+    
+        // Save updated service provider
+        serviceProviderRepo.save(serviceProvider);
+    
+        return ResponseEntity.ok("Service Provider registered successfully");
+    }catch (Exception e) {
+            e.printStackTrace();  // Log the error
+            return ResponseEntity.status(500).body("Internal Server Error");
     }
-
-    // Encrypt password before saving
-    serviceProvider.setPassword(passwordEncoder.encode(serviceProvider.getPassword()));
-
-    // Save to get ID
-    serviceProviderRepo.save(serviceProvider);
-
-    // Set custom ID after saving
-    serviceProvider.setService_provider_id(ServiceProvider.generateServiceProviderId(serviceProvider.getId()));
-
-    // Save updated service provider
-    serviceProviderRepo.save(serviceProvider);
-
-    return ResponseEntity.ok("Service Provider registered successfully");
 }
+    
+
 
 
     // Login Service Provider
