@@ -6,7 +6,7 @@ import java.nio.file.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/service-provider")
+@RequestMapping("/api/providers")
 public class ServiceProviderImageController {
     
     private static final String IMAGE_DIRECTORY = "uploads/";
