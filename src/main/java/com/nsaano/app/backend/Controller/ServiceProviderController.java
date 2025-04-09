@@ -87,6 +87,35 @@ public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvid
         return serviceProviderRepo.findAll();
     }
 
+    // Get Service Provider by Phone Number
+@GetMapping("/serviceprovider")
+public ResponseEntity<ServiceProvider> getProviderDetailsByPhoneNumber(@RequestParam String phoneNumber) {
+    ServiceProvider provider = serviceProviderRepo.findByPhoneNumber(phoneNumber);
+    if (provider != null) {
+        return ResponseEntity.ok(provider);
+    }
+    return ResponseEntity.notFound().build();
+}
+@PutMapping("/serviceprovider")
+public ResponseEntity<ServiceProvider> updateProviderByPhoneNumber(
+    @RequestParam String phoneNumber, @RequestBody ServiceProvider provider
+) {
+    ServiceProvider existing = serviceProviderRepo.findByPhoneNumber(phoneNumber);
+    if (existing == null) {
+        return ResponseEntity.notFound().build();
+    }
+
+    existing.setEmail(provider.getEmail());
+    existing.setPhoneNumber(provider.getPhoneNumber());
+    existing.setLocation(provider.getLocation());
+    existing.setServiceType(provider.getServiceType());
+    existing.setProfilePicture(provider.getProfilePicture());
+    existing.setBusinessName(provider.getBusinessName());
+    // ... more fields you want to allow updating
+
+    return ResponseEntity.ok(serviceProviderRepo.save(existing));
+}
+
     // Update a Service Provider’s Details
     @PutMapping("/{id}")
     public ResponseEntity<ServiceProvider> updateProvider(
