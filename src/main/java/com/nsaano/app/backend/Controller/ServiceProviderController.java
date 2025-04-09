@@ -8,6 +8,7 @@ import com.nsaano.app.backend.Models.ServiceProvider;
 import com.nsaano.app.backend.Repo.ServiceProviderRepo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -109,5 +110,20 @@ public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvid
         return ResponseEntity.ok(serviceProviderRepo.save(existing));
     }
     
+    @PutMapping("/{id}/availability")
+public ResponseEntity<String> updateAvailability(
+    @PathVariable Long id, 
+    @RequestBody Map<String, Boolean> availability
+) {
+    Optional<ServiceProvider> providerOpt = serviceProviderRepo.findById(id);
+    if (providerOpt.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+    ServiceProvider provider = providerOpt.get();
+    provider.setAvailability(availability); // Update the availability map
+    serviceProviderRepo.save(provider); // Save the updated provider
+    return ResponseEntity.ok("Availability updated successfully");
+}
+
 }
 
