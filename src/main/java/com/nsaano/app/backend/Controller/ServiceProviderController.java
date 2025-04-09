@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.nsaano.app.backend.Models.ServiceProvider;
 import com.nsaano.app.backend.Repo.ServiceProviderRepo;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -125,5 +127,16 @@ public ResponseEntity<String> updateAvailability(
     return ResponseEntity.ok("Availability updated successfully");
 }
 
+ @PostMapping("/logout")
+    public ResponseEntity<String> logoutServiceProvider(HttpServletRequest request) {
+        try {
+            // Invalidate the session
+            request.getSession().invalidate();
+            return ResponseEntity.ok("Logout successful");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Internal Server Error during logout");
+        }
+    }
 }
 
