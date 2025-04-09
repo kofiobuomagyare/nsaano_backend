@@ -177,11 +177,11 @@ public class ServiceProvider {
         return "nsaserv" + df.format(id);
     }
 
-    // Automatically generate service_provider_id before saving
-    @PrePersist
-public void prePersist() {
-    this.service_provider_id = generateServiceProviderId(this.id);
-}
+    @PostPersist
+    public void postPersist() {
+        // Generate the ID after the entity is saved
+        this.service_provider_id = generateServiceProviderId(this.id);
+    }
 
 
     public void saveProfileImage(String base64Image, String fileName) throws Exception {
