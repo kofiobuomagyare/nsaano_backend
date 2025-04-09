@@ -1,7 +1,11 @@
 package com.nsaano.app.backend.Models;
 
 import jakarta.persistence.*;
+
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -178,4 +182,11 @@ public class ServiceProvider {
     public void prePersist() {
         this.service_provider_id = generateServiceProviderId(this.id);
     }
+
+    public void saveProfileImage(String base64Image, String fileName) throws Exception {
+    byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+    try (OutputStream stream = new FileOutputStream("uploads/" + fileName)) {
+        stream.write(imageBytes);
+    }
+}
 }
