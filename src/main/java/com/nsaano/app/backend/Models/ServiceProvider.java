@@ -31,8 +31,9 @@ public class ServiceProvider {
     @Embedded
     private Location location; // Using an embedded entity for latitude & longitude
     
-    @Column
+    @Column(columnDefinition = "LONGTEXT") // Or TEXT
     private String profilePicture;
+
 
     @Column
     private String description; // Added field for provider description
