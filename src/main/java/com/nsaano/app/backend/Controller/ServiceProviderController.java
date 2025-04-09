@@ -21,19 +21,26 @@ public class ServiceProviderController {
     
     // Register a new Service Provider
     @PostMapping("/register")
-    public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvider serviceProvider) {
-        if (serviceProviderRepo.findByEmail(serviceProvider.getEmail()) != null) {
-            return ResponseEntity.badRequest().body("Email already in use");
-        }
-        serviceProviderRepo.save(serviceProvider); // First save to get ID
-        serviceProvider.setService_provider_id(ServiceProvider.generateServiceProviderId(serviceProvider.getId()));
-        serviceProviderRepo.save(serviceProvider); // Save again to update the ID
-        
-        // Encrypt password before saving
-        serviceProvider.setPassword(passwordEncoder.encode(serviceProvider.getPassword()));
-        serviceProviderRepo.save(serviceProvider);
-        return ResponseEntity.ok("Service Provider registered successfully");
+public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvider serviceProvider) {
+    if (serviceProviderRepo.findByEmail(serviceProvider.getEmail()) != null) {
+        return ResponseEntity.badRequest().body("Email already in use");
     }
+
+    // Encrypt password before saving
+    serviceProvider.setPassword(passwordEncoder.encode(serviceProvider.getPassword()));
+
+    // Save to get ID
+    serviceProviderRepo.save(serviceProvider);
+
+    // Set custom ID after saving
+    serviceProvider.setService_provider_id(ServiceProvider.generateServiceProviderId(serviceProvider.getId()));
+
+    // Save updated service provider
+    serviceProviderRepo.save(serviceProvider);
+
+    return ResponseEntity.ok("Service Provider registered successfully");
+}
+
 
     // Login Service Provider
     @PostMapping("/login")
@@ -76,11 +83,24 @@ public class ServiceProviderController {
         @PathVariable Long id,
         @RequestBody ServiceProvider provider
     ) {
-        if (!serviceProviderRepo.existsById(id)) {
+        Optional<ServiceProvider> existingOpt = serviceProviderRepo.findById(id);
+        if (existingOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        provider.setId(id);
-        return ResponseEntity.ok(serviceProviderRepo.save(provider));
+    
+        ServiceProvider existing = existingOpt.get();
+    
+        // Only update necessary fields
+        existing.setEmail(provider.getEmail());
+        existing.setPhoneNumber(provider.getPhoneNumber());
+        existing.setLocation(provider.getLocation());
+        existing.setServiceType(provider.getServiceType());
+        existing.setProfilePicture(provider.getProfilePicture());
+        existing.setBusinessName(provider.getBusinessName());
+        // ... more fields you want to allow updating
+    
+        return ResponseEntity.ok(serviceProviderRepo.save(existing));
     }
+    
 }
 
