@@ -11,12 +11,19 @@ public class ServiceProviderImageController {
     
     private static final String IMAGE_DIRECTORY = "uploads/";
 
-    @PostMapping("/upload-image")
-    public String uploadImage(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/{id}/upload-image")
+    public String uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
-            Path filePath = Paths.get(IMAGE_DIRECTORY + file.getOriginalFilename());
-            Files.createDirectories(filePath.getParent());
+            // Create a directory for each service provider using their ID
+            Path providerDir = Paths.get(IMAGE_DIRECTORY + id);
+            Files.createDirectories(providerDir);
+
+            // Define the file path (including provider's ID as a folder)
+            Path filePath = providerDir.resolve(file.getOriginalFilename());
+
+            // Save the file
             Files.write(filePath, file.getBytes());
+
             return "Image uploaded successfully: " + filePath.toString();
         } catch (IOException e) {
             return "Error uploading image: " + e.getMessage();
