@@ -25,7 +25,10 @@ public class ServiceProviderController {
         if (serviceProviderRepo.findByEmail(serviceProvider.getEmail()) != null) {
             return ResponseEntity.badRequest().body("Email already in use");
         }
-
+        serviceProviderRepo.save(serviceProvider); // First save to get ID
+        serviceProvider.setService_provider_id(ServiceProvider.generateServiceProviderId(serviceProvider.getId()));
+        serviceProviderRepo.save(serviceProvider); // Save again to update the ID
+        
         // Encrypt password before saving
         serviceProvider.setPassword(passwordEncoder.encode(serviceProvider.getPassword()));
         serviceProviderRepo.save(serviceProvider);

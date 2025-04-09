@@ -179,9 +179,10 @@ public class ServiceProvider {
 
     // Automatically generate service_provider_id before saving
     @PrePersist
-    public void prePersist() {
-        this.service_provider_id = generateServiceProviderId(this.id);
-    }
+public void prePersist() {
+    this.service_provider_id = generateServiceProviderId(this.id);
+}
+
 
     public void saveProfileImage(String base64Image, String fileName) throws Exception {
     byte[] imageBytes = Base64.getDecoder().decode(base64Image);
