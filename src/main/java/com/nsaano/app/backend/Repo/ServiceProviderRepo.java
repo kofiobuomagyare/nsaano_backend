@@ -25,4 +25,5 @@ public interface ServiceProviderRepo extends JpaRepository<ServiceProvider, Long
     );
 
     ServiceProvider findByPhoneNumber(String phoneNumber);
+    List<ServiceProvider> findByServiceTypeIn(List<String> serviceTypes);
 }
