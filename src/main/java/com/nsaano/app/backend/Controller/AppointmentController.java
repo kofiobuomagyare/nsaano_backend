@@ -18,7 +18,7 @@ public class AppointmentController {
     @Autowired
     private AppointmentRepo appointmentRepo;
     
-   @PostMapping("/appointments/create")
+   @PostMapping("/create")
 public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
     try {
         // Log incoming appointment data
