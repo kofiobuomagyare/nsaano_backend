@@ -8,6 +8,7 @@ import com.nsaano.app.backend.Models.Appointment;
 import com.nsaano.app.backend.Models.Appointment.AppointmentId;
 import com.nsaano.app.backend.Repo.AppointmentRepo;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,19 +19,27 @@ public class AppointmentController {
     @Autowired
     private AppointmentRepo appointmentRepo;
     
-   @PostMapping("/create")
-   public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
-    System.out.println("Creating appointment: " + appointment);
-    try {
-        appointmentRepo.save(appointment);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                             .body("{\"message\": \"Appointment created successfully\"}");
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body("{\"message\": \"Failed to create appointment: " + e.getMessage() + "\"}");
+    @PostMapping("/create")
+    public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
+        System.out.println("Creating appointment: " + appointment);
+    
+        // Check if the appointment date is in the past
+        if (appointment.getAppointmentDate().before(new Date())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body("{\"message\": \"Appointment date cannot be in the past.\"}");
+        }
+    
+        try {
+            appointmentRepo.save(appointment);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                                 .body("{\"message\": \"Appointment created successfully\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("{\"message\": \"Failed to create appointment: " + e.getMessage() + "\"}");
+        }
     }
-}
+    
 
     @PutMapping("/update/{id}")
     public String updateAppointment(@PathVariable AppointmentId id, @RequestBody Appointment updatedAppointment) {
