@@ -19,18 +19,13 @@ public class AppointmentController {
     private AppointmentRepo appointmentRepo;
     
    @PostMapping("/create")
-public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
+   public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
+    System.out.println("Creating appointment: " + appointment);
     try {
-        // Log incoming appointment data
-        System.out.println("Creating appointment: " + appointment);
-
-        // Assuming appointment is valid, save it to the database
         appointmentRepo.save(appointment);
-
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body("{\"message\": \"Appointment created successfully\"}");
     } catch (Exception e) {
-        // Log the error stack trace for debugging
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body("{\"message\": \"Failed to create appointment: " + e.getMessage() + "\"}");
