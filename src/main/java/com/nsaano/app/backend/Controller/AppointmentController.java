@@ -1,6 +1,8 @@
 package com.nsaano.app.backend.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.nsaano.app.backend.Models.Appointment;
 import com.nsaano.app.backend.Models.Appointment.AppointmentId;
@@ -16,12 +18,25 @@ public class AppointmentController {
     @Autowired
     private AppointmentRepo appointmentRepo;
     
-    @PostMapping("/create")
-    public String createAppointment(@RequestBody Appointment appointment) {
+   @PostMapping("/appointments/create")
+public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
+    try {
+        // Log incoming appointment data
+        System.out.println("Creating appointment: " + appointment);
+
+        // Assuming appointment is valid, save it to the database
         appointmentRepo.save(appointment);
-        return "Appointment created successfully";
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body("{\"message\": \"Appointment created successfully\"}");
+    } catch (Exception e) {
+        // Log the error stack trace for debugging
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("{\"message\": \"Failed to create appointment: " + e.getMessage() + "\"}");
     }
-    
+}
+
     @PutMapping("/update/{id}")
     public String updateAppointment(@PathVariable AppointmentId id, @RequestBody Appointment updatedAppointment) {
         Optional<Appointment> appointment = appointmentRepo.findById(id);
