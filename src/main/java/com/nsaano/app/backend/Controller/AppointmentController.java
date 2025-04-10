@@ -47,7 +47,7 @@ public class AppointmentController {
     
     @DeleteMapping("/cancel/{id}")
     public String cancelAppointment(@PathVariable AppointmentId id) {
-        if (appointmentRepo.existsById(new Appointment.AppointmentId(id))) {
+        if (appointmentRepo.existsById(new Appointment.AppointmentId())) {
             appointmentRepo.deleteById(id);
             return "Appointment canceled successfully";
         }

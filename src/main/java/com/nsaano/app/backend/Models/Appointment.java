@@ -34,6 +34,7 @@ public class Appointment {
     // Default constructor
     public Appointment() {}
 
+    // Constructor for setting the composite key fields
     public Appointment(String user_id, String service_provider_id, User user, ServiceProvider serviceProvider, Date appointmentDate, String status) {
         this.user_id = user_id;
         this.service_provider_id = service_provider_id;
@@ -97,8 +98,10 @@ public class Appointment {
         private String user_id;
         private String service_provider_id;
 
-        public AppointmentId(AppointmentId id) {}
+        // No-argument constructor required by JPA
+        public AppointmentId() {}
 
+        // Constructor for setting the composite key fields
         public AppointmentId(String user_id, String service_provider_id) {
             this.user_id = user_id;
             this.service_provider_id = service_provider_id;
