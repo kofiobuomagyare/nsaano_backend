@@ -63,6 +63,20 @@ public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvid
         return ResponseEntity.badRequest().body("Invalid phone number or password");
     }
     
+     // Get Service Providers by Service Type
+     @GetMapping("/service_type")
+     public ResponseEntity<List<ServiceProvider>> getServiceProvidersByType(
+         @RequestParam List<String> serviceTypes) {
+         List<ServiceProvider> providers = serviceProviderRepo.findByServiceTypeIn(serviceTypes);
+         return ResponseEntity.ok(providers);
+     }
+ 
+     // Get all Service Providers
+     @GetMapping("/all")
+     public ResponseEntity<List<ServiceProvider>> getAllServiceProviders() {
+         List<ServiceProvider> providers = serviceProviderRepo.findAll();
+         return ResponseEntity.ok(providers);
+     }
 
     // Get Nearby Service Providers
     @GetMapping("/nearby")
@@ -82,10 +96,7 @@ public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvid
         return provider.map(ResponseEntity::ok)
                        .orElse(ResponseEntity.notFound().build());
     }
-     @GetMapping("/serviceproviders")
-    public List<ServiceProvider> getAllServiceProviders() {
-        return serviceProviderRepo.findAll();
-    }
+   
 
     // Get Service Provider by Phone Number
 @GetMapping("/serviceprovider")
