@@ -9,6 +9,4 @@ User findByPhoneNumberOrEmail(String phoneNumber, String email);
 User findByEmail(String email);
 User findByPhoneNumber(String phoneNumber);
 User findByPhoneNumberAndPassword(String phoneNumber, String password);
-
-
 }
