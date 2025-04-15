@@ -67,4 +67,10 @@ public class AppointmentController {
     public List<Appointment> getAllAppointments() {
         return appointmentRepo.findAll();
     }
+    @GetMapping("/user/{userId}")
+public ResponseEntity<List<Appointment>> getAppointmentsByUserId(@PathVariable String userId) {
+    List<Appointment> appointments = appointmentRepo.findByUserId(userId);
+    return ResponseEntity.ok(appointments);
+}
+
 }
