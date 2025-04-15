@@ -1,5 +1,6 @@
 package com.nsaano.app.backend.Controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,15 +89,26 @@ public ResponseEntity<?> findUserIdByPhoneNumberAndPassword(@RequestParam String
 
     
 
-@GetMapping("/profile/{phoneNumber}")
-public ResponseEntity<?> getUserProfile(@PathVariable String phoneNumber) {
-    User user = userRepo.findByPhoneNumberOrEmail(phoneNumber, null); // only phoneNumber matters here
-    if (user == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body("{\"message\": \"User not found\"}");
+ @GetMapping("/users/profile/{user_id}")
+    public ResponseEntity<?> getUserProfile(@PathVariable("user_id") String userId) {
+        User user = userRepo.findByUser_id(userId);
+
+        if (user == null) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("first_name", user.getFirst_name());
+        response.put("last_name", user.getLast_name());
+        response.put("email", user.getEmail());
+        response.put("phone_number", user.getPhone_number());
+        response.put("age", user.getAge());
+        response.put("gender", user.getGender());
+        response.put("profile_picture", user.getProfile_picture());
+        response.put("address", user.getAddress());
+
+        return ResponseEntity.ok(response);
     }
-    return ResponseEntity.ok(user);
-}
 
 
 @PostMapping("/logout")
