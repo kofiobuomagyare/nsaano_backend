@@ -85,6 +85,28 @@ public ResponseEntity<?> findUserIdByPhoneNumberAndPassword(@RequestParam String
     }
 }
 
+@GetMapping("/users/login")
+public ResponseEntity<?> login(@RequestParam String phoneNumber, @RequestParam String password) {
+    User user = userRepo.findByPhoneNumberAndPassword(phoneNumber, password);
+
+    if (user != null) {
+        Map<String, Object> profile = Map.of(
+            "user_id", user.getUser_id(),
+            "first_name", user.getFirst_name(),
+            "last_name", user.getLast_name(),
+            "email", user.getEmail(),
+            "phone_number", user.getPhone_number(),
+            "age", user.getAge(),
+            "gender", user.getGender(),
+            "address", user.getAddress(),
+            "profile_picture", user.getProfile_picture()
+        );
+
+        return ResponseEntity.ok().body(profile);
+    } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
+    }
+}
 
     
 
