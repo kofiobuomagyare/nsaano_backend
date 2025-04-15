@@ -2,8 +2,6 @@ package com.nsaano.app.backend.Controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +17,6 @@ public class ApiControllers {
 
     @Autowired
     private UserRepo userRepo;
-    @Autowired
-    private UserRepo UserRepo;
 
     @GetMapping("/")
     public String getPage() {
@@ -78,16 +74,17 @@ public ResponseEntity<?> findUserIdByPhone(@RequestParam String phone) {
     // Return the user ID or any relevant information you want
     return ResponseEntity.ok("{\"user_id\": \"" + user.getUser_id() + "\"}");
 }
+@GetMapping("/users/findUserIdByPhoneAndPassword")
+public ResponseEntity<?> findUserIdByPhoneAndPassword(@RequestParam String phone, @RequestParam String password) {
+    User user = userRepo.findByPhoneAndPassword(phone, password);
 
- @GetMapping("/users/findUserIdByPhoneAndPassword")
-    public ResponseEntity<?> findUserIdByPhoneAndPassword(@RequestParam String phone, @RequestParam String password) {
-        Optional<User> user = UserRepo.findByPhoneAndPassword(phone, password); // You must implement this
-        if (user.isPresent()) {
-            return ResponseEntity.ok().body(Map.of("user_id", user.get().getUser_id()));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
-        }
+    if (user != null) {
+        return ResponseEntity.ok().body(Map.of("user_id", user.getUser_id()));
+    } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
     }
+}
+
     
 
 @GetMapping("/profile/{phoneNumber}")
