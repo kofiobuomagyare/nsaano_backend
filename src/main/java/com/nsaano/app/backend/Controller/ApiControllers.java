@@ -90,7 +90,7 @@ public ResponseEntity<?> findUserIdByPhoneNumberAndPassword(@RequestParam String
     
 
  @GetMapping("/users/profile/{user_id}")
-    public ResponseEntity<?> getUserProfile(@PathVariable("user_id") String userId) {
+    public ResponseEntity<?> getUserProfile(@PathVariable("user_id") Long userId) {
         User user = userRepo.findByUser_id(userId);
 
         if (user == null) {
