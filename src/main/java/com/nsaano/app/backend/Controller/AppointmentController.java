@@ -6,21 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.nsaano.app.backend.Models.Appointment;
 import com.nsaano.app.backend.Models.Appointment.AppointmentId;
-import com.nsaano.app.backend.Models.User;
 import com.nsaano.app.backend.Repo.AppointmentRepo;
-import com.nsaano.app.backend.Repo.UserRepo;
-
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/appointments")
 public class AppointmentController {
     
-    @Autowired
-    private UserRepo UserRepo;
+  
     @Autowired
     private AppointmentRepo appointmentRepo;
     
@@ -72,15 +67,6 @@ public class AppointmentController {
     public List<Appointment> getAllAppointments() {
         return appointmentRepo.findAll();
     }
-    @GetMapping("/findUserIdByPhoneAndPassword")
-    public ResponseEntity<?> findUserIdByPhoneAndPassword(@RequestParam String phone, @RequestParam String password) {
-        Optional<User> user = UserRepo.findByPhoneAndPassword(phone, password); // You must implement this
-        if (user.isPresent()) {
-            return ResponseEntity.ok().body(Map.of("user_id", user.get().getUser_id()));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
-        }
-    }
-    
+   
 
 }
