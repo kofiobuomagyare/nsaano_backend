@@ -63,8 +63,8 @@ public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
     }
 }
 @GetMapping("/users/findUserIdByPhone")
-public ResponseEntity<?> findUserIdByPhone(@RequestParam String phone) {
-    User user = userRepo.findByPhoneNumber(phone); // Use the method from UserRepo to find the user by phone number
+public ResponseEntity<?> findUserIdByPhone(@RequestParam String phoneNumber) {
+    User user = userRepo.findByPhoneNumber(phoneNumber); // Use the method from UserRepo to find the user by phone number
 
     if (user == null) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -74,9 +74,9 @@ public ResponseEntity<?> findUserIdByPhone(@RequestParam String phone) {
     // Return the user ID or any relevant information you want
     return ResponseEntity.ok("{\"user_id\": \"" + user.getUser_id() + "\"}");
 }
-@GetMapping("/users/findUserIdByPhoneAndPassword")
-public ResponseEntity<?> findUserIdByPhoneAndPassword(@RequestParam String phone, @RequestParam String password) {
-    User user = userRepo.findByPhoneAndPassword(phone, password);
+@GetMapping("/users/findUserIdByPhoneNumberAndPassword")
+public ResponseEntity<?> findUserIdByPhoneNumberAndPassword(@RequestParam String phoneNumber, @RequestParam String password) {
+    User user = userRepo.findByPhoneNumberAndPassword(phoneNumber, password);
 
     if (user != null) {
         return ResponseEntity.ok().body(Map.of("user_id", user.getUser_id()));

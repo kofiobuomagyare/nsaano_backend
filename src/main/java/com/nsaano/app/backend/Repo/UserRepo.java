@@ -7,8 +7,8 @@ import com.nsaano.app.backend.Models.User;
 public interface UserRepo extends JpaRepository<User, Long> {
 User findByPhoneNumberOrEmail(String phoneNumber, String email);
 User findByEmail(String email);
-User findByPhoneNumber(String phone);
-User findByPhoneAndPassword(String phone, String password);
+User findByPhoneNumber(String phoneNumber);
+User findByPhoneNumberAndPassword(String phoneNumber, String password);
 
 
 }
