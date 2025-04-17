@@ -167,6 +167,14 @@ public ResponseEntity<String> updateAvailability(
     return ResponseEntity.ok("Availability updated successfully");
 }
 
+@GetMapping("/get-id-by-phone/{phone}")
+public ResponseEntity<Long> getServiceProviderIdByPhone(@PathVariable String phone) {
+    Optional<ServiceProvider> providerOpt = Optional.ofNullable(serviceProviderRepo.findByPhoneNumber(phone));
+    return providerOpt
+        .map(provider -> ResponseEntity.ok(provider.getId()))
+        .orElse(ResponseEntity.notFound().build());
+}
+ 
  @PostMapping("/logout")
     public ResponseEntity<String> logoutServiceProvider(HttpServletRequest request) {
         try {
