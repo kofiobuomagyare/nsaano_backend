@@ -152,29 +152,29 @@ public ResponseEntity<ServiceProvider> updateProviderByPhoneNumber(
         return ResponseEntity.ok(serviceProviderRepo.save(existing));
     }
     
-    @PutMapping("/{service_provider_id}/availability")
-    public ResponseEntity<String> updateAvailability(
-        @PathVariable("service_provider_id") String serviceProviderId,
-        @RequestBody Map<String, Boolean> availability
-    ) {
-        Optional<ServiceProvider> providerOpt = serviceProviderRepo.findByServiceProviderId(serviceProviderId);
-        if (providerOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        ServiceProvider provider = providerOpt.get();
-        provider.setAvailability(availability); // Update the availability map
-        serviceProviderRepo.save(provider); // Save the updated provider
-        return ResponseEntity.ok("Availability updated successfully");
+  @PutMapping("/{service_provider_id}/availability")
+public ResponseEntity<String> updateAvailability(
+    @PathVariable("service_provider_id") Long serviceProviderId,
+    @RequestBody Map<String, Boolean> availability
+) {
+    Optional<ServiceProvider> providerOpt = serviceProviderRepo.findByServiceProviderId(serviceProviderId);
+    if (providerOpt.isEmpty()) {
+        return ResponseEntity.notFound().build();
     }
-    
-    @GetMapping("/get-id-by-phone/{phone}")
-    public ResponseEntity<String> getServiceProviderIdByPhone(@PathVariable String phone) {
-        Optional<ServiceProvider> providerOpt = Optional.ofNullable(serviceProviderRepo.findByPhoneNumber(phone));
-        return providerOpt
-            .map(provider -> ResponseEntity.ok(provider.getService_provider_id()))
-            .orElse(ResponseEntity.notFound().build());
-    }
-    
+    ServiceProvider provider = providerOpt.get();
+    provider.setAvailability(availability); // Update the availability map
+    serviceProviderRepo.save(provider); // Save the updated provider
+    return ResponseEntity.ok("Availability updated successfully");
+}
+
+@GetMapping("/get-id-by-phone/{phone}")
+public ResponseEntity<String> getServiceProviderIdByPhone(@PathVariable String phone) {
+    Optional<ServiceProvider> providerOpt = Optional.ofNullable(serviceProviderRepo.findByPhoneNumber(phone));
+    return providerOpt
+        .map(provider -> ResponseEntity.ok(provider.getService_provider_id()))
+        .orElse(ResponseEntity.notFound().build());
+}
+
  
  @PostMapping("/logout")
     public ResponseEntity<String> logoutServiceProvider(HttpServletRequest request) {
