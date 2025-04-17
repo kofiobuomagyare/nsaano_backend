@@ -152,12 +152,12 @@ public ResponseEntity<ServiceProvider> updateProviderByPhoneNumber(
         return ResponseEntity.ok(serviceProviderRepo.save(existing));
     }
     
-  @PutMapping("/{service_provider_id}/availability")
+    @PutMapping("/{id}/availability")
 public ResponseEntity<String> updateAvailability(
-    @PathVariable("service_provider_id") String serviceProviderId,
+    @PathVariable Long id, 
     @RequestBody Map<String, Boolean> availability
 ) {
-    Optional<ServiceProvider> providerOpt = serviceProviderRepo.findByServiceProviderId(serviceProviderId);
+    Optional<ServiceProvider> providerOpt = serviceProviderRepo.findById(id);
     if (providerOpt.isEmpty()) {
         return ResponseEntity.notFound().build();
     }
@@ -167,15 +167,6 @@ public ResponseEntity<String> updateAvailability(
     return ResponseEntity.ok("Availability updated successfully");
 }
 
-@GetMapping("/get-id-by-phone/{phone}")
-public ResponseEntity<String> getServiceProviderIdByPhone(@PathVariable String phone) {
-    Optional<ServiceProvider> providerOpt = Optional.ofNullable(serviceProviderRepo.findByPhoneNumber(phone));
-    return providerOpt
-        .map(provider -> ResponseEntity.ok(provider.getService_provider_id()))
-        .orElse(ResponseEntity.notFound().build());
-}
-
- 
  @PostMapping("/logout")
     public ResponseEntity<String> logoutServiceProvider(HttpServletRequest request) {
         try {
