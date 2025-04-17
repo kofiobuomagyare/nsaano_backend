@@ -5,10 +5,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
+
 import com.nsaano.app.backend.Models.ServiceProvider;
 
 @Repository
 public interface ServiceProviderRepo extends JpaRepository<ServiceProvider, Long> {
+    Optional<ServiceProvider> findByServiceProviderId(String serviceProviderId);
 
     // Find a service provider by email
     ServiceProvider findByEmail(String email);
