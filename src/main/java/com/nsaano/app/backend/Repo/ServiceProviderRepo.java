@@ -11,7 +11,7 @@ import com.nsaano.app.backend.Models.ServiceProvider;
 
 @Repository
 public interface ServiceProviderRepo extends JpaRepository<ServiceProvider, Long> {
-    Optional<ServiceProvider> findByServiceProviderId(Long serviceProviderId);
+    Optional<ServiceProvider> findByServiceProviderId(String Service_Provider_Id);
 
     // Find a service provider by email
     ServiceProvider findByEmail(String email);

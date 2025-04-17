@@ -154,7 +154,7 @@ public ResponseEntity<ServiceProvider> updateProviderByPhoneNumber(
     
   @PutMapping("/{service_provider_id}/availability")
 public ResponseEntity<String> updateAvailability(
-    @PathVariable("service_provider_id") Long serviceProviderId,
+    @PathVariable("service_provider_id") String serviceProviderId,
     @RequestBody Map<String, Boolean> availability
 ) {
     Optional<ServiceProvider> providerOpt = serviceProviderRepo.findByServiceProviderId(serviceProviderId);
