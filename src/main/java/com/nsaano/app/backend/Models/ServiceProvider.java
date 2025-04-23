@@ -57,6 +57,7 @@ public class ServiceProvider {
     
     @Column(unique = true)
     private String service_provider_id; // Unique provider ID
+    private boolean available; // Availability status
 
     // Getters and Setters
     public long getId() {
@@ -189,5 +190,12 @@ public class ServiceProvider {
     try (OutputStream stream = new FileOutputStream("uploads/" + fileName)) {
         stream.write(imageBytes);
     }
+}
+public void setAvailable(boolean available) {
+    this.available = available;
+}
+
+public boolean isAvailable() {
+    return available;
 }
 }
