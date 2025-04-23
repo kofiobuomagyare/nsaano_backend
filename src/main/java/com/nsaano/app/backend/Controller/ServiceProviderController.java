@@ -170,7 +170,7 @@ public ResponseEntity<?> updateAvailability(
     return ResponseEntity.ok("Availability updated");
 }
 
-    @PutMapping("/{id}/availability")
+    @PutMapping("/by-id/{id}/availability")
 public ResponseEntity<String> updateAvailability(
     @PathVariable Long id, 
     @RequestBody Map<String, Boolean> availability
