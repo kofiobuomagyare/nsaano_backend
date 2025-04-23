@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.Optional;
-
 import com.nsaano.app.backend.Models.ServiceProvider;
 
 @Repository
@@ -28,6 +26,7 @@ public interface ServiceProviderRepo extends JpaRepository<ServiceProvider, Long
 
     ServiceProvider findByPhoneNumber(String phoneNumber);
     List<ServiceProvider> findByServiceTypeIn(List<String> serviceTypes);
-    Optional<ServiceProvider> findByServiceProviderId(String serviceProviderId);
+    @Query("SELECT s FROM ServiceProvider s WHERE s.service_provider_id = :id")
+    ServiceProvider findByServiceProviderId(@Param("id") String id);    
 
 }

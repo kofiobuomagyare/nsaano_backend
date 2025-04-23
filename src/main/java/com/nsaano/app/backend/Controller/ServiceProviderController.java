@@ -154,12 +154,12 @@ public ResponseEntity<ServiceProvider> updateProviderByPhoneNumber(
     
     @PutMapping("/{providerId}/availability")
 public ResponseEntity<?> updateAvailability(
-        @PathVariable String providerId,
+        @PathVariable String service_provider_id,
         @RequestBody Map<String, Boolean> body) {
     
     boolean isAvailable = body.getOrDefault("available", false);
 
-    ServiceProvider provider = serviceProviderRepo.findByServiceProviderId(providerId);
+    ServiceProvider provider = serviceProviderRepo.findByServiceProviderId(service_provider_id);
     if (provider == null) {
         return ResponseEntity.notFound().build();
     }
