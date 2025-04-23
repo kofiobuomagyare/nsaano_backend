@@ -152,7 +152,7 @@ public ResponseEntity<ServiceProvider> updateProviderByPhoneNumber(
         return ResponseEntity.ok(serviceProviderRepo.save(existing));
     }
     
-    @PutMapping("/{providerId}/availability")
+    @PutMapping("/{service_provider_id}/availability")
 public ResponseEntity<?> updateAvailability(
         @PathVariable String service_provider_id,
         @RequestBody Map<String, Boolean> body) {
