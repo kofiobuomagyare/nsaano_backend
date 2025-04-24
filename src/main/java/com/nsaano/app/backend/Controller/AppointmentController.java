@@ -87,9 +87,9 @@ public ResponseEntity<String> cancelAppointment(
     }
     
     @GetMapping("/{service_provider_id}/appointments")
-public ResponseEntity<?> getAppointmentsByProviderId(@PathVariable Long service_provider_id) {
-    // Fetch appointments based on the service provider ID
-    List<Appointment> appointments = appointmentRepo.findByServiceProviderId(service_provider_id);
+    public ResponseEntity<?> getAppointmentsByProviderId(@PathVariable String service_provider_id) {
+        Long numericId = Long.parseLong(service_provider_id.replace("nsaserv", ""));
+        List<Appointment> appointments = appointmentRepo.findByServiceProviderId(numericId);
 
     if (appointments.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
