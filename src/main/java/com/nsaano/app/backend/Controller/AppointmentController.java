@@ -8,7 +8,7 @@ import com.nsaano.app.backend.Models.Appointment;
 import com.nsaano.app.backend.Models.Appointment.AppointmentId;
 import com.nsaano.app.backend.Repo.AppointmentRepo;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -54,19 +54,35 @@ public class AppointmentController {
         return "Appointment not found";
     }
     
-    @DeleteMapping("/cancel/{id}")
-    public String cancelAppointment(@PathVariable AppointmentId id) {
-        if (appointmentRepo.existsById(new Appointment.AppointmentId())) {
-            appointmentRepo.deleteById(id);
-            return "Appointment canceled successfully";
+    @DeleteMapping("/cancel")
+public ResponseEntity<String> cancelAppointment(
+    @RequestParam String user_id, 
+    @RequestParam String service_provider_id
+) {
+    Appointment.AppointmentId id = new Appointment.AppointmentId(user_id, service_provider_id);
+    if (appointmentRepo.existsById(id)) {
+        appointmentRepo.deleteById(id);
+        return ResponseEntity.ok("Appointment canceled successfully");
+    }
+    return ResponseEntity.status(404).body("Appointment not found");
+}
+
+   
+    @PutMapping("/update/status")
+    public ResponseEntity<String> updateStatus(
+        @RequestParam String user_id, 
+        @RequestParam String service_provider_id,
+        @RequestBody Map<String, String> body
+    ) {
+        Appointment.AppointmentId id = new Appointment.AppointmentId(user_id, service_provider_id);
+        Optional<Appointment> appointment = appointmentRepo.findById(id);
+        if (appointment.isPresent()) {
+            Appointment a = appointment.get();
+            a.setStatus(body.get("status"));
+            appointmentRepo.save(a);
+            return ResponseEntity.ok("Status updated");
         }
-        return "Appointment not found";
+        return ResponseEntity.status(404).body("Appointment not found");
     }
     
-    @GetMapping("/all")
-    public List<Appointment> getAllAppointments() {
-        return appointmentRepo.findAll();
-    }
-   
-
 }
