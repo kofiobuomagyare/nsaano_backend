@@ -8,4 +8,5 @@ import com.nsaano.app.backend.Models.Appointment;
 public interface AppointmentRepo extends JpaRepository<Appointment, Appointment.AppointmentId> {
 
     List<Appointment> findByUserId(Long userId);
+    List<Appointment> findByServiceProviderId(String serviceProviderId);
 }
