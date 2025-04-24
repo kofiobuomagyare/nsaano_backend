@@ -5,9 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import com.nsaano.app.backend.Models.Appointment;
 import com.nsaano.app.backend.Models.ServiceProvider;
-import com.nsaano.app.backend.Repo.AppointmentRepo;
 import com.nsaano.app.backend.Repo.ServiceProviderRepo;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +17,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/providers") // Updated endpoint structure
 public class ServiceProviderController {
-    @Autowired
-    private AppointmentRepo AppointmentRepo; //
     @Autowired
     private ServiceProviderRepo serviceProviderRepo;
     
@@ -199,13 +195,6 @@ public ResponseEntity<String> updateAvailability(
             e.printStackTrace();
             return ResponseEntity.status(500).body("Internal Server Error during logout");
         }
-    }
-
-    @GetMapping("/{service_provider_id}/appointments")
-    public ResponseEntity<List<Appointment>> getAppointmentsByProviderId(
-            @PathVariable String service_provider_id) {
-        List<Appointment> appointments = AppointmentRepo.findByServiceProviderId(service_provider_id);
-        return ResponseEntity.ok(appointments);
     }
     
 }
