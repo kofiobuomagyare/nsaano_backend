@@ -8,6 +8,7 @@ import com.nsaano.app.backend.Models.Appointment;
 import com.nsaano.app.backend.Models.Appointment.AppointmentId;
 import com.nsaano.app.backend.Repo.AppointmentRepo;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -85,4 +86,54 @@ public ResponseEntity<String> cancelAppointment(
         return ResponseEntity.status(404).body("Appointment not found");
     }
     
+    @GetMapping("/{service_provider_id}/appointments")
+public ResponseEntity<?> getAppointmentsByProviderId(@PathVariable String service_provider_id) {
+    // Fetch appointments based on the service provider ID
+    List<Appointment> appointments = appointmentRepo.findByServiceProviderId(service_provider_id);
+
+    if (appointments.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body("{\"message\": \"No appointments found for this service provider.\"}");
+    }
+
+    return ResponseEntity.ok(appointments);
+}
+@PutMapping("/{service_provider_id}/appointments/{user_id}/status")
+public ResponseEntity<?> updateAppointmentStatus(
+        @PathVariable String service_provider_id, 
+        @PathVariable String user_id, // user_id should be part of the URL path
+        @RequestBody Map<String, String> body) {
+
+    // Create a composite ID using user_id and service_provider_id
+    Appointment.AppointmentId id = new Appointment.AppointmentId(user_id, service_provider_id);
+
+    // Fetch the appointment based on the composite key
+    Optional<Appointment> appointmentOpt = appointmentRepo.findById(id);
+
+    if (!appointmentOpt.isPresent()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body("{\"message\": \"Appointment not found.\"}");
+    }
+
+    Appointment appointment = appointmentOpt.get();
+
+    // Check if the appointment belongs to the provided service provider
+    if (!appointment.getService_provider_id().equals(service_provider_id)) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body("{\"message\": \"You do not have permission to update this appointment.\"}");
+    }
+
+    // Update the appointment status
+    String newStatus = body.get("status");
+    if (newStatus == null || newStatus.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body("{\"message\": \"Status must be provided.\"}");
+    }
+
+    appointment.setStatus(newStatus);
+    appointmentRepo.save(appointment);
+
+    return ResponseEntity.ok("{\"message\": \"Appointment status updated successfully.\"}");
+}
+
 }
