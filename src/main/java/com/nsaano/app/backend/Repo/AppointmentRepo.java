@@ -9,4 +9,5 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Appointment.
 
     List<Appointment> findByUserId(Long userId);
     List<Appointment> findByServiceProviderId(Long serviceProviderId);
+    List<Appointment> findByServiceProviderId(String serviceProviderId);
 }

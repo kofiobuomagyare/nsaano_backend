@@ -203,10 +203,10 @@ public ResponseEntity<String> updateAvailability(
 
     @GetMapping("/{service_provider_id}/appointments")
     public ResponseEntity<List<Appointment>> getAppointmentsByProviderId(
-            @PathVariable Long service_provider_id) {
+            @PathVariable String service_provider_id) {
         List<Appointment> appointments = AppointmentRepo.findByServiceProviderId(service_provider_id);
         return ResponseEntity.ok(appointments);
     }
-
+    
 }
 
