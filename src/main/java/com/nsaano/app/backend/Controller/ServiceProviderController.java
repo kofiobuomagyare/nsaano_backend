@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.nsaano.app.backend.Models.Location;
 import com.nsaano.app.backend.Models.ServiceProvider;
 import com.nsaano.app.backend.Repo.ServiceProviderRepo;
 
@@ -127,32 +128,74 @@ public ResponseEntity<ServiceProvider> updateProviderByPhoneNumber(
     return ResponseEntity.ok(serviceProviderRepo.save(existing));
 }
 
-    // Update a Service Provider’s Details
-    @PutMapping("/{id}")
-    public ResponseEntity<ServiceProvider> updateProvider(
-        @PathVariable Long id,
-        @RequestBody ServiceProvider provider
-    ) {
-        Optional<ServiceProvider> existingOpt = serviceProviderRepo.findById(id);
-        if (existingOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+@PutMapping("/{service_provider_id}/details")
+public ResponseEntity<?> updateProviderDetails(
+    @PathVariable String service_provider_id,
+    @RequestBody Map<String, Object> updates) {
     
-        ServiceProvider existing = existingOpt.get();
-    
-        // Only update necessary fields
-        existing.setEmail(provider.getEmail());
-        existing.setPhoneNumber(provider.getPhoneNumber());
-        existing.setLocation(provider.getLocation());
-        existing.setServiceType(provider.getServiceType());
-        existing.setProfilePicture(provider.getProfilePicture());
-        existing.setBusinessName(provider.getBusinessName());
-        // ... more fields you want to allow updating
-    
-        return ResponseEntity.ok(serviceProviderRepo.save(existing));
+    ServiceProvider provider = serviceProviderRepo.findByServiceProviderId(service_provider_id);
+    if (provider == null) {
+        return ResponseEntity.notFound().build();
     }
-    
-    @PutMapping("/{service_provider_id}/availability")
+
+    // Partial updates - only modify fields that are provided
+    if (updates.containsKey("email")) {
+        provider.setEmail((String) updates.get("email"));
+    }
+    if (updates.containsKey("phoneNumber")) {
+        provider.setPhoneNumber((String) updates.get("phoneNumber"));
+    }
+    if (updates.containsKey("location")) {
+        try {
+            // Safely handle the location update
+            Object locationObj = updates.get("location");
+            if (locationObj instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> locationMap = (Map<String, Object>) locationObj;
+                
+                // Get or create location object
+                Location location = provider.getLocation() != null 
+                    ? provider.getLocation() 
+                    : new Location();
+                
+                // Update latitude if present
+                if (locationMap.containsKey("latitude")) {
+                    Object latObj = locationMap.get("latitude");
+                    if (latObj instanceof Number) {
+                        location.setLatitude(((Number) latObj).doubleValue());
+                    }
+                }
+                
+                // Update longitude if present
+                if (locationMap.containsKey("longitude")) {
+                    Object lngObj = locationMap.get("longitude");
+                    if (lngObj instanceof Number) {
+                        location.setLongitude(((Number) lngObj).doubleValue());
+                    }
+                }
+                
+                provider.setLocation(location);
+            }
+        } catch (Exception e) {
+            // Log the error if needed
+            return ResponseEntity.badRequest().body("Invalid location format");
+        }
+    }
+    if (updates.containsKey("serviceType")) {
+        provider.setServiceType((String) updates.get("serviceType"));
+    }
+    if (updates.containsKey("businessName")) {
+        provider.setBusinessName((String) updates.get("businessName"));
+    }
+    // Add more fields as needed
+
+    ServiceProvider updatedProvider = serviceProviderRepo.save(provider);
+    return ResponseEntity.ok(updatedProvider);
+}
+
+//update availability by service provider id
+// Assuming availability is a boolean field in the ServiceProvider model 
+@PutMapping("/{service_provider_id}/availability")
 public ResponseEntity<?> updateAvailability(
         @PathVariable String service_provider_id,
         @RequestBody Map<String, Boolean> body) {
