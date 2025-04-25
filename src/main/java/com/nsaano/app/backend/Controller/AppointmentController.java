@@ -98,6 +98,36 @@ public ResponseEntity<String> cancelAppointment(
 
     return ResponseEntity.ok(appointments);
 }
+
+@GetMapping("/user/{user_id}")
+public ResponseEntity<?> getAppointmentsByUserId(@PathVariable String user_id) {
+    try {
+        // Extract numerical part from user_id (assuming format is "nsa123" where 123 is the ID)
+        String numericalIdStr = user_id.replaceAll("[^0-9]", "");
+        
+        if (numericalIdStr.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body("{\"message\": \"Invalid user ID format.\"}");
+        }
+        
+        Long numericalId = Long.parseLong(numericalIdStr);
+        List<Appointment> appointments = appointmentRepo.findByUserId(numericalId);
+        
+        if (appointments.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body("{\"message\": \"No appointments found for this user.\"}");
+        }
+        
+        return ResponseEntity.ok(appointments);
+    } catch (NumberFormatException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                         .body("{\"message\": \"Invalid user ID format.\"}");
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                         .body("{\"message\": \"Error retrieving user appointments: " + e.getMessage() + "\"}");
+    }
+}
 @PutMapping("/{service_provider_id}/appointments/{user_id}/status")
 public ResponseEntity<?> updateAppointmentStatus(
         @PathVariable String service_provider_id, 
