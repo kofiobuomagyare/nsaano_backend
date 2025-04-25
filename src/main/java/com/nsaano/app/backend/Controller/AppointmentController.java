@@ -99,33 +99,27 @@ public ResponseEntity<String> cancelAppointment(
     return ResponseEntity.ok(appointments);
 }
 
-@GetMapping("/{user_id}/appointments")
+@GetMapping("/users/{user_id}/appointments")
 public ResponseEntity<?> getAppointmentsByUserId(@PathVariable String user_id) {
     try {
-        // Extract numerical part from user_id (assuming format is "nsa123" where 123 is the ID)
-        String numericalIdStr = user_id.replaceAll("[^0-9]", "");
+        // Remove "nsa" prefix (assuming format is "nsa123")
+        String numericalPart = user_id.replace("nsa", ""); 
+        Long userId = Long.parseLong(numericalPart);
         
-        if (numericalIdStr.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body("{\"message\": \"Invalid user ID format.\"}");
-        }
-        
-        Long numericalId = Long.parseLong(numericalIdStr);
-        List<Appointment> appointments = appointmentRepo.findByUserId(numericalId);
+        List<Appointment> appointments = appointmentRepo.findByUserId(userId);
         
         if (appointments.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body("{\"message\": \"No appointments found for this user.\"}");
+                .body("{\"message\": \"No appointments found for this user.\"}");
         }
         
         return ResponseEntity.ok(appointments);
     } catch (NumberFormatException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                         .body("{\"message\": \"Invalid user ID format.\"}");
+        return ResponseEntity.badRequest()
+            .body("{\"message\": \"Invalid user ID format. Expected 'nsa123'.\"}");
     } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                         .body("{\"message\": \"Error retrieving user appointments: " + e.getMessage() + "\"}");
+        return ResponseEntity.internalServerError()
+            .body("{\"message\": \"Error: " + e.getMessage() + "\"}");
     }
 }
 @PutMapping("/{service_provider_id}/appointments/{user_id}/status")
