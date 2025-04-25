@@ -1,5 +1,6 @@
 package com.nsaano.app.backend.Controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +109,37 @@ public ResponseEntity<?> login(@RequestParam String phoneNumber, @RequestParam S
     }
 }
 
-    
+    @GetMapping("/users/profile")
+public ResponseEntity<?> getUserProfileByPhone(@RequestParam String phoneNumber) {
+    try {
+        // Find user by phone number
+        User user = userRepo.findByPhoneNumber(phoneNumber);
+        
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"message\": \"User not found\"}");
+        }
+        
+        // Build the profile response
+        Map<String, Object> profile = new HashMap<>();
+        profile.put("first_name", user.getFirst_name());
+        profile.put("last_name", user.getLast_name());
+        profile.put("email", user.getEmail());
+        profile.put("phone_number", user.getPhone_number());
+        profile.put("gender", user.getGender() != null ? user.getGender() : "");
+        
+        // Handle age differently since it's a primitive int
+        profile.put("age", user.getAge()); // This will be 0 if not set
+        
+        profile.put("address", user.getAddress() != null ? user.getAddress() : "");
+        profile.put("profile_picture", user.getProfile_picture() != null ? user.getProfile_picture() : "");
+        
+        return ResponseEntity.ok(profile);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("{\"message\": \"Error retrieving profile: " + e.getMessage() + "\"}");
+    }
+}
 
  
 
