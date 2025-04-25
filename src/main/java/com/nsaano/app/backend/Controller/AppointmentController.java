@@ -99,7 +99,7 @@ public ResponseEntity<String> cancelAppointment(
     return ResponseEntity.ok(appointments);
 }
 
-@GetMapping("/user/{user_id}")
+@GetMapping("/{user_id}/appointments")
 public ResponseEntity<?> getAppointmentsByUserId(@PathVariable String user_id) {
     try {
         // Extract numerical part from user_id (assuming format is "nsa123" where 123 is the ID)
