@@ -63,6 +63,29 @@ public ResponseEntity<String> registerServiceProvider(@RequestBody ServiceProvid
         }
         return ResponseEntity.badRequest().body("Invalid phone number or password");
     }
+
+    @PutMapping("/reset-password")
+public ResponseEntity<String> resetPassword(
+        @RequestParam String phoneNumber,
+        @RequestBody Map<String, String> body) {
+
+    ServiceProvider provider = serviceProviderRepo.findByPhoneNumber(phoneNumber);
+    if (provider == null) {
+        return ResponseEntity.badRequest().body("Service provider not found");
+    }
+
+    String newPassword = body.get("newPassword");
+    if (newPassword == null || newPassword.length() < 6) {
+        return ResponseEntity.badRequest().body("Password must be at least 6 characters");
+    }
+
+    // Encrypt new password
+    provider.setPassword(passwordEncoder.encode(newPassword));
+    serviceProviderRepo.save(provider);
+
+    return ResponseEntity.ok("Password reset successful");
+}
+
     
      // Get Service Providers by Service Type
      @GetMapping("/service_type")
