@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.nsaano.app.backend.Models.User;
@@ -18,6 +19,8 @@ public class ApiControllers {
 
     @Autowired
     private UserRepo userRepo;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 
     @GetMapping("/")
     public String getPage() {
@@ -38,6 +41,7 @@ public class ApiControllers {
             }
     
             // Save user to database
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
     
             // Return JSON response
@@ -53,7 +57,8 @@ public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         // Find user by phone number or email
         User user = userRepo.findByPhoneNumberOrEmail(loginRequest.getPhone_number(), loginRequest.getEmail());
 
-        if (user == null || !user.getPassword().equals(loginRequest.getPassword())) {
+        if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
+ {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"Invalid phone number or password\"}");
         }
 
@@ -63,6 +68,24 @@ public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Login failed: " + e.getMessage() + "\"}");
     }
 }
+
+@PutMapping("/users/reset-password")
+public ResponseEntity<?> resetPassword(@RequestParam String phoneOrEmail, @RequestParam String newPassword) {
+    User user = userRepo.findByPhoneNumber(phoneOrEmail);
+    if (user == null) {
+        user = userRepo.findByEmail(phoneOrEmail);
+    }
+
+    if (user == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
+    }
+
+    user.setPassword(passwordEncoder.encode(newPassword));
+    userRepo.save(user);
+    return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+}
+
+
 @GetMapping("/users/findUserIdByPhone")
 public ResponseEntity<?> findUserIdByPhone(@RequestParam String phoneNumber) {
     User user = userRepo.findByPhoneNumber(phoneNumber); // Use the method from UserRepo to find the user by phone number
