@@ -109,17 +109,6 @@ public ResponseEntity<?> findUserIdByPhoneNumberAndPassword(@RequestParam String
     }
 }
 
-// Fetch user by user_id
-@GetMapping("/{userId}")
-public ResponseEntity<?> getUserByUserId(@PathVariable String userId) {
-    User user = userRepo.findByUser_id(userId);
-    if (user != null) {
-        return ResponseEntity.ok(user);
-    } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-    }
-}
-
 @GetMapping("/users/login")
 public ResponseEntity<?> login(@RequestParam String phoneNumber, @RequestParam String password) {
     User user = userRepo.findByPhoneNumberAndPassword(phoneNumber, password);
