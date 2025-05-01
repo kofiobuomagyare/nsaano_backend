@@ -165,26 +165,31 @@ public ResponseEntity<?> getUserProfileByPhone(@RequestParam String phoneNumber)
 }
 
 //endpoint to update availability
-@PutMapping("/users/update-availability")
+@PutMapping("/api/users/update-availability")
 public ResponseEntity<?> updateAvailability(@RequestParam String phoneNumber, @RequestParam boolean isAvailable) {
     try {
         User user = userRepo.findByPhoneNumber(phoneNumber);
-
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", "User not found"));
+                    .body(Map.of("message", "User not found with phone number: " + phoneNumber));
         }
-
+        
+        // Debug log to verify user object
+        System.out.println("Found user: " + user.getFirst_name() + ", current availability: " + user.isAvailable());
+        
         user.setAvailable(isAvailable);
         userRepo.save(user);
-
-        return ResponseEntity.ok(Map.of("message", "Availability updated successfully", "isAvailable", user.isAvailable()));
+        
+        return ResponseEntity.ok(Map.of(
+            "message", "Availability updated successfully", 
+            "isAvailable", user.isAvailable()
+        ));
     } catch (Exception e) {
+        e.printStackTrace(); // Add this for better debugging
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", "Failed to update availability", "error", e.getMessage()));
     }
 }
-
 
 @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {

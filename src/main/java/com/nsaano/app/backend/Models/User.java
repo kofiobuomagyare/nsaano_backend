@@ -49,7 +49,7 @@ public class User {
     @Column(unique = true)
     private String user_id; // Added user_id column
     @Column(name = "is_available")
-private boolean isAvailable;
+    private Boolean isAvailable = false; // Initialize with default value
 
     // Getters and setters
 
