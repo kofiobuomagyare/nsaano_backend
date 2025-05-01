@@ -165,7 +165,7 @@ public ResponseEntity<?> getUserProfileByPhone(@RequestParam String phoneNumber)
 }
 
 //endpoint to update availability
-@PutMapping("/api/users/update-availability")
+@PutMapping("/users/update-availability")
 public ResponseEntity<?> updateAvailability(@RequestParam String phoneNumber, @RequestParam boolean isAvailable) {
     try {
         User user = userRepo.findByPhoneNumber(phoneNumber);
