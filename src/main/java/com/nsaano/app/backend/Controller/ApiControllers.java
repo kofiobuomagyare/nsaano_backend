@@ -3,6 +3,8 @@ package com.nsaano.app.backend.Controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -188,6 +190,22 @@ public ResponseEntity<?> updateAvailability(@RequestParam String phoneNumber, @R
         e.printStackTrace(); // Add this for better debugging
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", "Failed to update availability", "error", e.getMessage()));
+    }
+}
+
+@GetMapping("/findByUserId/{userId}")
+public ResponseEntity<?> getUserByUserId(@PathVariable String userId) {
+    try {
+        Optional<User> user = userRepo.findByUserId(userId);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "User not found"));
+        }
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("error", e.getMessage()));
     }
 }
 
