@@ -164,7 +164,27 @@ public ResponseEntity<?> getUserProfileByPhone(@RequestParam String phoneNumber)
     }
 }
 
- 
+//endpoint to update availability
+@PutMapping("/users/update-availability")
+public ResponseEntity<?> updateAvailability(@RequestParam String phoneNumber, @RequestParam boolean isAvailable) {
+    try {
+        User user = userRepo.findByPhoneNumber(phoneNumber);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found"));
+        }
+
+        user.setAvailable(isAvailable);
+        userRepo.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "Availability updated successfully", "isAvailable", user.isAvailable()));
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Failed to update availability", "error", e.getMessage()));
+    }
+}
+
 
 @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {

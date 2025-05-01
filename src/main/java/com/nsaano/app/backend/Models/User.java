@@ -48,6 +48,8 @@ public class User {
 
     @Column(unique = true)
     private String user_id; // Added user_id column
+    @Column(name = "is_available")
+private boolean isAvailable;
 
     // Getters and setters
 
@@ -166,4 +168,12 @@ public class User {
     public void postPersist() {
         this.user_id = generateUserId(this.id);
     }
+    
+public boolean isAvailable() {
+    return isAvailable;
 }
+public void setAvailable(boolean available) {
+    isAvailable = available;
+}
+}
+
