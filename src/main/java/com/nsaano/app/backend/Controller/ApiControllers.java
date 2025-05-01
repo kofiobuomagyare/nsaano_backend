@@ -114,11 +114,20 @@ public ResponseEntity<?> findUserIdByPhoneNumberAndPassword(@RequestParam String
 public ResponseEntity<?> getUserByUserId(@PathVariable String userId) {
     User user = userRepo.findByUser_id(userId);
     if (user != null) {
-        return ResponseEntity.ok(user);
+        Map<String, Object> response = new HashMap<>();
+        response.put("first_name", user.getFirst_name());
+        response.put("last_name", user.getLast_name());
+        response.put("email", user.getEmail());
+        response.put("phone_number", user.getPhone_number());
+        response.put("user_id", user.getUser_id());
+        response.put("profile_picture", user.getProfile_picture());
+
+        return ResponseEntity.ok(response);
     } else {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
 }
+
 
 @GetMapping("/users/login")
 public ResponseEntity<?> login(@RequestParam String phoneNumber, @RequestParam String password) {
