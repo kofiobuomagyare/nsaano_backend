@@ -193,7 +193,7 @@ public ResponseEntity<?> updateAvailability(@RequestParam String phoneNumber, @R
     }
 }
 
-@GetMapping("/findByUserId/{userId}")
+@GetMapping("/users/findByUserId/{userId}")
 public ResponseEntity<?> getUserByUserId(@PathVariable String userId) {
     try {
         Optional<User> user = userRepo.findByUserId(userId);
