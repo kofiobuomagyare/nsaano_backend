@@ -5,11 +5,9 @@ import com.nsaano.app.backend.Models.ServiceProviderImage;
 import com.nsaano.app.backend.Repo.ServiceProviderRepo;
 import com.nsaano.app.backend.Repo.ServiceProviderImageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.nio.file.*;
 import java.io.IOException;
 import java.util.*;
 
@@ -17,9 +15,13 @@ import java.util.*;
 @RequestMapping("/api/providers")
 public class ServiceProviderImageController {
     
-    private static final String IMAGE_DIRECTORY = "uploads/service_images/";
     private static final int MAX_IMAGES = 10;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png");
+    private static final Map<String, String> MIME_TYPES = Map.of(
+        ".jpg", "image/jpeg",
+        ".jpeg", "image/jpeg",
+        ".png", "image/png"
+    );
 
     @Autowired
     private ServiceProviderRepo serviceProviderRepo;
@@ -58,10 +60,7 @@ public class ServiceProviderImageController {
                 return response;
             }
 
-            Path providerDir = Paths.get(IMAGE_DIRECTORY + service_provider_id);
-            Files.createDirectories(providerDir);
-
-            // Count existing images using the service provider entity
+            // Count existing images
             long imageCount = serviceProviderImageRepo.countByServiceProvider(provider);
             if (imageCount >= MAX_IMAGES) {
                 response.put("status", "error");
@@ -69,29 +68,16 @@ public class ServiceProviderImageController {
                 return response;
             }
 
-            String uniqueFilename = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + fileExtension;
-            Path filePath = providerDir.resolve(uniqueFilename);
-
-            BufferedImage image = ImageIO.read(file.getInputStream());
-            if (image == null) {
-                response.put("status", "error");
-                response.put("message", "Invalid image file");
-                return response;
-            }
-
-            String formatName = fileExtension.equals(".png") ? "png" : "jpg";
-            ImageIO.write(image, formatName, filePath.toFile());
-
             // Save image metadata to database
             ServiceProviderImage imageEntity = new ServiceProviderImage();
-            imageEntity.setServiceProvider(provider); // Set the relationship
-            imageEntity.setImagePath("/service-images/" + service_provider_id + "/" + uniqueFilename);
+            imageEntity.setServiceProvider(provider);
+            imageEntity.setImageData(file.getBytes());
             imageEntity.setCaption(caption != null ? caption : "");
+            imageEntity.setMimeType(MIME_TYPES.get(fileExtension));
             imageEntity.setUploadDate(new Date());
             serviceProviderImageRepo.save(imageEntity);
 
             response.put("status", "success");
-            response.put("imageUrl", imageEntity.getImagePath());
             response.put("imageId", imageEntity.getId());
             response.put("caption", imageEntity.getCaption());
             return response;
@@ -113,15 +99,24 @@ public class ServiceProviderImageController {
             
             for (ServiceProviderImage image : dbImages) {
                 Map<String, Object> imageInfo = new HashMap<>();
-                imageInfo.put("url", image.getImagePath());
                 imageInfo.put("id", image.getId());
                 imageInfo.put("caption", image.getCaption());
                 imageInfo.put("uploadDate", image.getUploadDate());
+                imageInfo.put("mimeType", image.getMimeType());
                 images.add(imageInfo);
             }
         }
         
         return images;
+    }
+
+    @GetMapping(value = "/image/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] getImage(@PathVariable Long imageId) {
+        Optional<ServiceProviderImage> imageOpt = serviceProviderImageRepo.findById(imageId);
+        if (imageOpt.isPresent()) {
+            return imageOpt.get().getImageData();
+        }
+        return new byte[0];
     }
 
     @DeleteMapping("/{service_provider_id}/delete-service-image/{imageId}")
@@ -138,24 +133,11 @@ public class ServiceProviderImageController {
             return response;
         }
 
-        ServiceProviderImage image = imageOpt.get();
-        try {
-            // Delete file from storage
-            Path imagePath = Paths.get("." + image.getImagePath());
-            if (Files.exists(imagePath)) {
-                Files.delete(imagePath);
-            }
-            
-            // Delete record from database
-            serviceProviderImageRepo.delete(image);
-            
-            response.put("status", "success");
-            response.put("message", "Image deleted successfully");
-        } catch (IOException e) {
-            response.put("status", "error");
-            response.put("message", "Error deleting image: " + e.getMessage());
-        }
+        // Delete record from database
+        serviceProviderImageRepo.delete(imageOpt.get());
         
+        response.put("status", "success");
+        response.put("message", "Image deleted successfully");
         return response;
     }
 }
