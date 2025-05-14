@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.nsaano.app.backend.Models.Appointment;
 import com.nsaano.app.backend.Models.Appointment.AppointmentId;
 import com.nsaano.app.backend.Repo.AppointmentRepo;
+import com.nsaano.app.backend.Services.AppointmentService;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,9 @@ public class AppointmentController {
   
     @Autowired
     private AppointmentRepo appointmentRepo;
+    @Autowired
+private AppointmentService appointmentService;
+
     
     @PostMapping("/create")
     public ResponseEntity<?> createAppointment(@RequestBody Appointment appointment) {
@@ -158,6 +163,12 @@ public ResponseEntity<?> updateAppointmentStatus(
     appointmentRepo.save(appointment);
 
     return ResponseEntity.ok("{\"message\": \"Appointment status updated successfully.\"}");
+}
+
+@GetMapping("/appointments/completed/count")
+public ResponseEntity<Integer> getCompletedJobs(@RequestParam Long providerId) {
+    int count = appointmentService.getCompletedJobsCount(providerId); // ✅ Correct
+    return ResponseEntity.ok(count);
 }
 
 }
