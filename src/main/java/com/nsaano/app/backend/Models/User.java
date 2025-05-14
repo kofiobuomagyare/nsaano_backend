@@ -38,7 +38,7 @@ public class User {
     @Column
     private String bio;
 
-    @Column(name = "profile_picture", columnDefinition = "TEXT")
+    @Column(name = "profile_picture", columnDefinition = "LONGTEXT")
     private String profilePicture;
 
 
