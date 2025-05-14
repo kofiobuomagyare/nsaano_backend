@@ -166,6 +166,37 @@ public ResponseEntity<?> getUserProfileByPhone(@RequestParam String phoneNumber)
     }
 }
 
+//endpoint to update user profile
+@PutMapping("/users/update-profile")
+public ResponseEntity<?> updateUserProfile(@RequestParam String phoneNumber, @RequestBody User updatedUser) {
+    try {
+        User user = userRepo.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body(Map.of("message", "User not found with phone number: " + phoneNumber));
+        }
+
+        // Update only the fields that are not null in updatedUser
+        if (updatedUser.getFirst_name() != null) user.setFirst_name(updatedUser.getFirst_name());
+        if (updatedUser.getLast_name() != null) user.setLast_name(updatedUser.getLast_name());
+        if (updatedUser.getEmail() != null) user.setEmail(updatedUser.getEmail());
+        if (updatedUser.getGender() != null) user.setGender(updatedUser.getGender());
+        if (updatedUser.getAddress() != null) user.setAddress(updatedUser.getAddress());
+        if (updatedUser.getProfile_picture() != null) user.setProfile_picture(updatedUser.getProfile_picture());
+
+        // Only update age if it's not 0
+        if (updatedUser.getAge() > 0) user.setAge(updatedUser.getAge());
+
+        userRepo.save(user);
+        return ResponseEntity.ok(Map.of("message", "Profile updated successfully"));
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body(Map.of("message", "Error updating profile", "error", e.getMessage()));
+    }
+}
+
+
 //endpoint to update availability
 @PutMapping("/users/update-availability")
 public ResponseEntity<?> updateAvailability(@RequestParam String phoneNumber, @RequestParam boolean isAvailable) {
