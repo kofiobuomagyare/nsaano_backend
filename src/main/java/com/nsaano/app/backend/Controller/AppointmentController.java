@@ -166,9 +166,17 @@ public ResponseEntity<?> updateAppointmentStatus(
 }
 
 @GetMapping("/appointments/completed/count")
-public ResponseEntity<Integer> getCompletedJobs(@RequestParam Long providerId) {
-    int count = appointmentService.getCompletedJobsCount(providerId); // ✅ Correct
-    return ResponseEntity.ok(count);
+public ResponseEntity<Integer> getCompletedJobs(@RequestParam String providerId) {
+    try {
+        // Remove "nsaserv" prefix and parse to Long
+        String numericalPart = providerId.replace("nsaserv", "");
+        Long numericId = Long.parseLong(numericalPart);
+        
+        int count = appointmentService.getCompletedJobsCount(numericId);
+        return ResponseEntity.ok(count);
+    } catch (NumberFormatException e) {
+        return ResponseEntity.badRequest().body(0);
+    }
 }
 
 }
